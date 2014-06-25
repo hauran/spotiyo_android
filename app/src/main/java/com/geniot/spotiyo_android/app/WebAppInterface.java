@@ -22,7 +22,8 @@ public class WebAppInterface {
     @JavascriptInterface
     public void showVideo(String videoId) {
         System.out.println("loadVideo: " + videoId);
-
+//        MainActivity ma = new MainActivity();
+        ((MainActivity)mContext).loadVideo(videoId);
 //        ytplayer = new YouTubePlayerView.initialize();
     }
 
