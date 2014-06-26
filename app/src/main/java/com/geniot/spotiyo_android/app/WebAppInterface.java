@@ -2,6 +2,7 @@ package com.geniot.spotiyo_android.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.webkit.JavascriptInterface;
 
 import com.google.android.youtube.player.YouTubePlayerView;
@@ -20,12 +21,12 @@ public class WebAppInterface {
 
     /** Start video from web app */
     @JavascriptInterface
-    public void showVideo(String videoId) {
-        System.out.println("loadVideo: " + videoId);
-//        MainActivity ma = new MainActivity();
-        ((MainActivity)mContext).loadVideo(videoId);
-//        ytplayer = new YouTubePlayerView.initialize();
+    public void loadVideo(final String videoId) {
+        ((MainActivity)mContext).runOnUiThread(new Runnable(){
+            public void run(){
+                ((MainActivity)mContext).loadVideo(videoId);
+            }
+
+        });
     }
-
-
 }

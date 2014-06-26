@@ -9,15 +9,19 @@ import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,11 +41,22 @@ public class MainActivity extends YouTubeBaseActivity implements
 
     String log = "";
 
+    Intent serviceIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        try {
+            serviceIntent = new Intent(this, myPlayService.class);
+            initViews();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), e.getClass().getName() + " " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 
+    private void initViews() {
 //        Full screen
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -64,6 +79,7 @@ public class MainActivity extends YouTubeBaseActivity implements
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+
 
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -110,7 +126,28 @@ public class MainActivity extends YouTubeBaseActivity implements
     }
 
     public void loadVideo(String videoId) {
-        youTubePlayer.loadVideo(videoId);
+        showVideo();
+
+        System.out.println("loadVideo: " + videoId);
+        serviceIntent.putExtra("videoId", videoId);
+        startService(serviceIntent);
+//      stopService(serviceIntent);
+
+//        youTubePlayer.loadVideo(videoId);
+    }
+
+    public void showVideo() {
+        WebView mWebView = (WebView) findViewById(R.id.activity_main_webview);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
+        params.setMargins(0,0,0,330);
+        mWebView.setLayoutParams(params);
+    }
+
+    public void hideVideo() {
+        WebView mWebView = (WebView) findViewById(R.id.activity_main_webview);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
+        params.setMargins(0,0,0,0);
+        mWebView.setLayoutParams(params);
     }
 
     private final class MyPlayerStateChangeListener implements PlayerStateChangeListener {
