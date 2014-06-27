@@ -22,6 +22,8 @@ public class MainActivity extends Activity {
 
     Intent serviceIntent;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
+    private static final String WEB_VIEW_URL = "http://yoplay-nqitaj4wnb.elasticbeanstalk.com";
+//    private static final String WEB_VIEW_URL = "http://localhost:8080";
     WebAppInterface webAppInterface;
     public static int LONG_PRESS_TIME = 500;
 
@@ -67,7 +69,7 @@ public class MainActivity extends Activity {
         });
 
 //      mWebView.loadUrl("http://yoplay-nqitaj4wnb.elasticbeanstalk.com");
-        mWebView.loadUrl("http://localhost:8080");
+        mWebView.loadUrl(WEB_VIEW_URL);
 
         mWebView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
@@ -76,8 +78,6 @@ public class MainActivity extends Activity {
         });
 
     }
-
-
 
     public void loadVideo(String rstp) {
         System.out.println("loadVideo: " + rstp);
@@ -92,7 +92,6 @@ public class MainActivity extends Activity {
         startService(serviceIntent);
 //      stopService(serviceIntent);
     }
-
 
 
     /*************************************/
@@ -124,6 +123,7 @@ public class MainActivity extends Activity {
         int noOfMatches = 1;
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, noOfMatches);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+        webAppInterface.listening();
     }
 
     @Override

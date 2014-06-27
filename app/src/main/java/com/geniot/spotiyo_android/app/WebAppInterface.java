@@ -22,7 +22,7 @@ public class WebAppInterface {
         mWebView = webview;
     }
 
-    /** Start video from web app */
+    /** Start video */
     @JavascriptInterface
     public void loadVideo(String rstp) {
         ((MainActivity)mContext).loadVideo(rstp);
@@ -33,10 +33,22 @@ public class WebAppInterface {
         ((MainActivity)mContext).loadPlaylist(rstps);
     }
 
+    @JavascriptInterface
+    public void speak() {
+        ((MainActivity)mContext).speak();
+    }
+
+
+
+
 
     @JavascriptInterface
     public void spoken(String words) {
         mWebView.loadUrl("javascript:spoken(\"" + words  + "\")");
     }
 
+    @JavascriptInterface
+    public void listening() {
+        mWebView.loadUrl("javascript:listening()");
+    }
 }
