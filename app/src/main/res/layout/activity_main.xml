@@ -5,19 +5,6 @@ android:layout_height="match_parent"
 android:orientation="vertical"
 tools:context=".MainActivity" >
 
-
-    <Button
-        android:id="@+id/btSpeak"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="speak"
-        android:text="@string/btSpeak"/>
-
-    <!--<ListView-->
-        <!--android:id="@+id/lvTextMatches"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-
 <WebView
     android:id="@+id/activity_main_webview"
     android:layout_width="match_parent"

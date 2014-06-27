@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -23,8 +22,8 @@ public class MainActivity extends Activity {
 
     Intent serviceIntent;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
-    private Button mbtSpeak;
     WebAppInterface webAppInterface;
+    public static int LONG_PRESS_TIME = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +41,6 @@ public class MainActivity extends Activity {
 
     private void initViews() {
 //        Full screen
-        final GestureDetector gestureDetector = new GestureDetector(getApplicationContext(), new GestureListener());
-
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
@@ -57,29 +54,27 @@ public class MainActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webAppInterface = new WebAppInterface(this, mWebView);
-
         mWebView.addJavascriptInterface(webAppInterface, "Android");
+        mWebView.setLongClickable(true);
+        mWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                speak();
+                return true;
+            }
+        });
 
-//        mWebView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(final View view, final MotionEvent event) {
-//                gestureDetector.onTouchEvent(event);
-//                return true;
-//            }
-//        });
-
-//        mWebView.loadUrl("http://yoplay-nqitaj4wnb.elasticbeanstalk.com");
-      mWebView.loadUrl("http://localhost:8080");
+//      mWebView.loadUrl("http://yoplay-nqitaj4wnb.elasticbeanstalk.com");
+        mWebView.loadUrl("http://localhost:8080");
 
         mWebView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 // do your stuff here
             }
         });
+
     }
 
 
@@ -100,30 +95,22 @@ public class MainActivity extends Activity {
 
 
 
-
-
-
+    /*************************************/
     /************* SPEECH ****************/
+    /*************************************/
 
-    private void initSpeech() {
-        mbtSpeak = (Button) findViewById(R.id.btSpeak);
-        checkVoiceRecognition();
-    }
-
-    public void checkVoiceRecognition() {
+    public void initSpeech() {
         // Check if voice recognition is present
         PackageManager pm = getPackageManager();
         List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
                 RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
         if (activities.size() == 0) {
-            mbtSpeak.setEnabled(false);
-            mbtSpeak.setText("Voice recognizer not present");
             Toast.makeText(this, "Voice recognizer not present",
                     Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void speak(View view) {
+    public void speak() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
         // Specify the calling package to identify your application
