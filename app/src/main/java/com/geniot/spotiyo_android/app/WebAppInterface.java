@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 import com.google.android.youtube.player.YouTubePlayerView;
 
@@ -13,20 +14,29 @@ import com.google.android.youtube.player.YouTubePlayerView;
  */
 public class WebAppInterface {
     Context mContext;
+    WebView mWebView;
 
     /** Instantiate the interface and set the context */
-    WebAppInterface(Context c) {
+    WebAppInterface(Context c, WebView webview) {
         mContext = c;
+        mWebView = webview;
     }
 
     /** Start video from web app */
     @JavascriptInterface
-    public void loadVideo(final String videoId) {
-        ((MainActivity)mContext).runOnUiThread(new Runnable(){
-            public void run(){
-                ((MainActivity)mContext).loadVideo(videoId);
-            }
-
-        });
+    public void loadVideo(String rstp) {
+        ((MainActivity)mContext).loadVideo(rstp);
     }
+
+    @JavascriptInterface
+    public void loadPlaylist(String rstps) {
+        ((MainActivity)mContext).loadPlaylist(rstps);
+    }
+
+
+    @JavascriptInterface
+    public void spoken(String words) {
+        mWebView.loadUrl("javascript:spoken(\"" + words  + "\")");
+    }
+
 }

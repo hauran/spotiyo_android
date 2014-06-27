@@ -1,47 +1,30 @@
 package com.geniot.spotiyo_android.app;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayer.PlaybackEventListener;
-import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener;
-import com.google.android.youtube.player.YouTubePlayer.Provider;
-
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.speech.RecognizerIntent;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends YouTubeBaseActivity implements
-        YouTubePlayer.OnInitializedListener{
-
-    public static final String VIDEO_ID = "2Bgb-60LeK8";
-
-    private YouTubePlayer youTubePlayer;
-    private YouTubePlayerFragment youTubePlayerFragment;
-
-
-    private static final int RQS_ErrorDialog = 1;
-
-    private MyPlayerStateChangeListener myPlayerStateChangeListener;
-    private MyPlaybackEventListener myPlaybackEventListener;
-
-    String log = "";
+public class MainActivity extends Activity {
 
     Intent serviceIntent;
+    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
+    private Button mbtSpeak;
+    WebAppInterface webAppInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +33,7 @@ public class MainActivity extends YouTubeBaseActivity implements
         try {
             serviceIntent = new Intent(this, myPlayService.class);
             initViews();
+            initSpeech();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), e.getClass().getName() + " " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -58,6 +42,8 @@ public class MainActivity extends YouTubeBaseActivity implements
 
     private void initViews() {
 //        Full screen
+        final GestureDetector gestureDetector = new GestureDetector(getApplicationContext(), new GestureListener());
+
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
@@ -66,164 +52,128 @@ public class MainActivity extends YouTubeBaseActivity implements
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-//        You Tube
-        youTubePlayerFragment = (YouTubePlayerFragment)getFragmentManager().findFragmentById(R.id.youtubeplayerfragment);
-        youTubePlayerFragment.initialize(DeveloperKey.DEVELOPER_KEY, this);
-
-        myPlayerStateChangeListener = new MyPlayerStateChangeListener();
-        myPlaybackEventListener = new MyPlaybackEventListener();
-
-
 //        Set up WebView
         WebView mWebView = (WebView) findViewById(R.id.activity_main_webview);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
 
-
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        mWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
+        webAppInterface = new WebAppInterface(this, mWebView);
+
+        mWebView.addJavascriptInterface(webAppInterface, "Android");
+
+//        mWebView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(final View view, final MotionEvent event) {
+//                gestureDetector.onTouchEvent(event);
+//                return true;
+//            }
+//        });
 
 //        mWebView.loadUrl("http://yoplay-nqitaj4wnb.elasticbeanstalk.com");
-        mWebView.loadUrl("http://localhost:8080");
-
+      mWebView.loadUrl("http://localhost:8080");
 
         mWebView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 // do your stuff here
             }
         });
-
     }
 
-    @Override
-    public void onInitializationFailure(Provider provider,
-                                        YouTubeInitializationResult result) {
 
-        if (result.isUserRecoverableError()) {
-            result.getErrorDialog(this, RQS_ErrorDialog).show();
-        } else {
-//            Toast.makeText(this,"YouTubePlayer.onInitializationFailure(): " + result.toString(),Toast.LENGTH_LONG).show();
-        }
-    }
 
-    @Override
-    public void onInitializationSuccess(Provider provider, YouTubePlayer player,
-                                        boolean wasRestored) {
-
-        youTubePlayer = player;
-
-        Toast.makeText(getApplicationContext(),"YouTubePlayer.onInitializationSuccess()",Toast.LENGTH_LONG).show();
-
-        youTubePlayer.setPlayerStateChangeListener(myPlayerStateChangeListener);
-        youTubePlayer.setPlaybackEventListener(myPlaybackEventListener);
-
-//        if (!wasRestored) {
-//            player.cueVideo(VIDEO_ID);
-//        }
-
-    }
-
-    public void loadVideo(String videoId) {
-        showVideo();
-
-        System.out.println("loadVideo: " + videoId);
-        serviceIntent.putExtra("videoId", videoId);
+    public void loadVideo(String rstp) {
+        System.out.println("loadVideo: " + rstp);
+        serviceIntent.putExtra("rstp", rstp);
         startService(serviceIntent);
 //      stopService(serviceIntent);
-
-//        youTubePlayer.loadVideo(videoId);
     }
 
-    public void showVideo() {
-        WebView mWebView = (WebView) findViewById(R.id.activity_main_webview);
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
-        params.setMargins(0,0,0,330);
-        mWebView.setLayoutParams(params);
+    public void loadPlaylist(String rstps) {
+        System.out.println("loadPlaylist: " + rstps);
+        serviceIntent.putExtra("rstp", rstps);
+        startService(serviceIntent);
+//      stopService(serviceIntent);
     }
 
-    public void hideVideo() {
-        WebView mWebView = (WebView) findViewById(R.id.activity_main_webview);
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
-        params.setMargins(0,0,0,0);
-        mWebView.setLayoutParams(params);
+
+
+
+
+
+    /************* SPEECH ****************/
+
+    private void initSpeech() {
+        mbtSpeak = (Button) findViewById(R.id.btSpeak);
+        checkVoiceRecognition();
     }
 
-    private final class MyPlayerStateChangeListener implements PlayerStateChangeListener {
-
-        private void updateLog(String prompt){
-//            log +=  "MyPlayerStateChangeListener" + "\n" +
-//                    prompt + "\n\n=====";
-//            System.out.print(log);
-        };
-
-        @Override
-        public void onAdStarted() {
-            updateLog("onAdStarted()");
+    public void checkVoiceRecognition() {
+        // Check if voice recognition is present
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
+                RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        if (activities.size() == 0) {
+            mbtSpeak.setEnabled(false);
+            mbtSpeak.setText("Voice recognizer not present");
+            Toast.makeText(this, "Voice recognizer not present",
+                    Toast.LENGTH_SHORT).show();
         }
-
-        @Override
-        public void onError(
-                com.google.android.youtube.player.YouTubePlayer.ErrorReason arg0) {
-            updateLog("onError(): " + arg0.toString());
-        }
-
-        @Override
-        public void onLoaded(String arg0) {
-            updateLog("onLoaded(): " + arg0);
-        }
-
-        @Override
-        public void onLoading() {
-            updateLog("onLoading()");
-        }
-
-        @Override
-        public void onVideoEnded() {
-            updateLog("onVideoEnded()");
-        }
-
-        @Override
-        public void onVideoStarted() {
-            updateLog("onVideoStarted()");
-        }
-
     }
 
-    private final class MyPlaybackEventListener implements PlaybackEventListener {
+    public void speak(View view) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-        private void updateLog(String prompt){
-//            log +=  "MyPlaybackEventListener" + "\n-" +
-//                    prompt + "\n\n=====";
-//            System.out.print(log);
-        };
+        // Specify the calling package to identify your application
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass()
+                .getPackage().getName());
 
-        @Override
-        public void onBuffering(boolean arg0) {
-            updateLog("onBuffering(): " + String.valueOf(arg0));
-        }
+        //1.LANGUAGE_MODEL_WEB_SEARCH : For short phrases
+        //2.LANGUAGE_MODEL_FREE_FORM  : If not sure about the words or phrases and its domain.
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
 
-        @Override
-        public void onPaused() {
-            updateLog("onPaused()");
-        }
-
-        @Override
-        public void onPlaying() {
-            updateLog("onPlaying()");
-        }
-
-        @Override
-        public void onSeekTo(int arg0) {
-            updateLog("onSeekTo(): " + String.valueOf(arg0));
-        }
-
-        @Override
-        public void onStopped() {
-            updateLog("onStopped()");
-        }
-
+        int noOfMatches = 1;
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, noOfMatches);
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE)
+
+            //If Voice recognition is successful then it returns RESULT_OK
+            if(resultCode == RESULT_OK) {
+
+                ArrayList<String> textMatchList = data
+                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                if (!textMatchList.isEmpty()) {
+                    spoken(textMatchList.get(0));
+                }
+                //Result code for various error.
+            }else if(resultCode == RecognizerIntent.RESULT_AUDIO_ERROR){
+                showToastMessage("Audio Error");
+            }else if(resultCode == RecognizerIntent.RESULT_CLIENT_ERROR){
+                showToastMessage("Client Error");
+            }else if(resultCode == RecognizerIntent.RESULT_NETWORK_ERROR){
+                showToastMessage("Network Error");
+            }else if(resultCode == RecognizerIntent.RESULT_NO_MATCH){
+                showToastMessage("No Match");
+            }else if(resultCode == RecognizerIntent.RESULT_SERVER_ERROR){
+                showToastMessage("Server Error");
+            }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    /**
+     * Helper method to show the toast message
+     **/
+    void showToastMessage(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void spoken (String words){
+        webAppInterface.spoken(words);
+    }
 }
