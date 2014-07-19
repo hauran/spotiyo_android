@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
-import com.google.android.youtube.player.YouTubePlayerView;
-
 
 /**
  * Created by rmai on 6/25/14.
@@ -22,15 +20,9 @@ public class WebAppInterface {
         mWebView = webview;
     }
 
-    /** Start video */
     @JavascriptInterface
-    public void loadVideo(String rstp) {
-        ((MainActivity)mContext).loadVideo(rstp);
-    }
-
-    @JavascriptInterface
-    public void loadPlaylist(String rstps) {
-        ((MainActivity)mContext).loadPlaylist(rstps);
+    public void play(String uri) {
+        ((MainActivity)mContext).play(uri);
     }
 
     @JavascriptInterface
@@ -38,7 +30,33 @@ public class WebAppInterface {
         ((MainActivity)mContext).speak();
     }
 
+    @JavascriptInterface
+    public void playerPlay() {
+        ((MainActivity)mContext).playerPlay();
+    }
 
+    @JavascriptInterface
+    public void playerPause() {
+        ((MainActivity)mContext).playerPause();
+    }
+
+    @JavascriptInterface
+    public void playerNext() {
+        ((MainActivity)mContext).playerNext();
+    }
+
+    @JavascriptInterface
+    public void skipForward(int skip) { ( (MainActivity)mContext).playerSkipForward(skip); }
+
+    @JavascriptInterface
+    public void skipBack(int skip) {
+        ((MainActivity)mContext).playerSkipBack(skip);
+    }
+
+    @JavascriptInterface
+    public void homeButton() {
+        ((MainActivity)mContext).homeButton();
+    }
 
 
 
@@ -51,4 +69,23 @@ public class WebAppInterface {
     public void listening() {
         mWebView.loadUrl("javascript:listening()");
     }
+
+    @JavascriptInterface
+    public void setPlaying() { mWebView.loadUrl("javascript:setPlaying()");}
+
+    @JavascriptInterface
+    public void skipNext() {
+        mWebView.loadUrl("javascript:skipNext()");
+    }
+
+    @JavascriptInterface
+    public void setPlayingText() {
+        mWebView.loadUrl("javascript:setPlayingText()");
+    }
+
+    @JavascriptInterface
+    public void back() {
+        mWebView.loadUrl("javascript:back()");
+    }
+
 }

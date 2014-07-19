@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-5fe0d419fc4e1252a5e9d5733f7c2f5108128568.jar"
+        jar="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/jnihelpers-1.0-265a92745095c26a85d8f2a55ab177eaf0c3d432.jar"
+        jar="/Users/rmai/gitrepo/Spotiyo_Android/app/libs/jnihelpers-1.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="3073b6d17a529ecfef97d40788420a8c86f94cf6"/>
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-1d492dcab2634b950eddb926ada51e3c4e165d8e.jar"
+        jar="/Users/rmai/dev/android_sdk/sdk/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/classes-cf03cb74fbc934d7f6a93cc7519164833d839ab7.jar"
+        jar="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef"/>
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/spotifysdk-player-1.0.0-beta1-a035ed4db998cb485f26330ce9ada3519f043952.jar"
+        jar="/Users/rmai/gitrepo/Spotiyo_Android/app/libs/spotifysdk-player-1.0.0-beta1.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="6772c128e63372a4d9a502a4d13699a95cdaabf4"/>
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/classes-025372637254381a2f1772fbdbe6c86b3e7f4b3a.jar"
+        jar="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/exploded-aar/com.spotify.sdk/spotifysdk/1.0.0-beta1/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="b66210a5ab81a86fedbda87c0ef414eb75f31902"/>
+    <item
+        dex="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/pre-dexed/debug/classes-ebcb32b24d6c9d71829f4fa08af98fb3b94a8988.jar"
+        jar="/Users/rmai/gitrepo/Spotiyo_Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
+
+</pre-dex-items>
