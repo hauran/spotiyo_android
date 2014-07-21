@@ -1,6 +1,7 @@
 package com.geniot.spotiyo_android.app;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -19,7 +20,10 @@ import android.content.pm.ResolveInfo;
 import android.speech.RecognizerIntent;
 import java.util.ArrayList;
 import java.util.List;
+import android.media.AudioManager;
 import android.view.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.spotify.sdk.android.Spotify;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -33,6 +37,8 @@ public class MainActivity extends Activity implements PlayerNotificationCallback
 
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
     WebAppInterface webAppInterface;
+    private int streamVolume;
+    private AudioManager audioManager;
     public static int LONG_PRESS_TIME = 500;
     private Player mPlayer;
     WebView mWebView;
@@ -55,10 +61,11 @@ public class MainActivity extends Activity implements PlayerNotificationCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
+            audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
             initViews();
             initSpeech();
             SpotifyAuthentication.openAuthWindow(Keys.SPOTIFY_CLIENT_ID, "token", Keys.SPOTIFY_REDIRECT_URI,
-                    new String[]{"user-read-private", "streaming"}, null, this);
+                    new String[]{"user-read-private","user-read-email","streaming","playlist-read-private","playlist-modify","playlist-modify-private"}, null, this);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), e.getClass().getName() + " " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -228,8 +235,36 @@ public class MainActivity extends Activity implements PlayerNotificationCallback
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+
+
+        streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        System.out.println("streamVolume " + streamVolume);
+        fadeVol(streamVolume - 1, -1);
         webAppInterface.listening();
+
     }
+
+    private void fadeVol(final int current, final int direction) {
+        System.out.println("current " + current);
+        final Timer timer = new Timer(true);
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run()
+            {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,current,0);
+                if(direction < 0) {
+                    if(current > 0) fadeVol(current - 1, direction);
+                    else mPlayer.pause();
+                }
+                else if(direction > 0) {
+                    if(current < streamVolume)fadeVol(current+1, direction);
+                    else mPlayer.resume();
+                }
+            }
+        };
+        timer.schedule(timerTask,50);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -237,6 +272,9 @@ public class MainActivity extends Activity implements PlayerNotificationCallback
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE)
             showToastMessage("here " +  resultCode);
             //If Voice recognition is successful then it returns RESULT_OK
+
+//            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,streamVolume,0);
+            fadeVol(0,1);
             if(resultCode == RESULT_OK) {
                 showToastMessage("RESULT_OK");
                 ArrayList<String> textMatchList = data

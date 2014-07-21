@@ -66,9 +66,7 @@ public class WebAppInterface {
     }
 
     @JavascriptInterface
-    public void listening() {
-        mWebView.loadUrl("javascript:listening()");
-    }
+    public void listening() {mWebView.loadUrl("javascript:listening()");}
 
     @JavascriptInterface
     public void setPlaying() { mWebView.loadUrl("javascript:setPlaying()");}
@@ -76,11 +74,6 @@ public class WebAppInterface {
     @JavascriptInterface
     public void skipNext() {
         mWebView.loadUrl("javascript:skipNext()");
-    }
-
-    @JavascriptInterface
-    public void setPlayingText() {
-        mWebView.loadUrl("javascript:setPlayingText()");
     }
 
     @JavascriptInterface
